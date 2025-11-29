@@ -13,13 +13,19 @@ enable_language(ASM)
 set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/boot.s
     ${CMAKE_SOURCE_DIR}/src/kernel/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/hw/console/console.cpp
+    ${CMAKE_SOURCE_DIR}/src/hw/console/text_mode_console.cpp
     ${CMAKE_SOURCE_DIR}/src/hw/peripherals/keyboard.cpp
     ${CMAKE_SOURCE_DIR}/src/input/editor.cpp
     ${CMAKE_SOURCE_DIR}/src/memory/heap.cpp
     ${CMAKE_SOURCE_DIR}/src/hw/boot/multiboot2.cpp
     ${CMAKE_SOURCE_DIR}/src/hw/graphics/framebuffer.cpp
     ${CMAKE_SOURCE_DIR}/src/hw/io/serial.cpp
+    ${CMAKE_SOURCE_DIR}/src/gfx/canvas.cpp
+    ${CMAKE_SOURCE_DIR}/src/gfx/shapes.cpp
+    ${CMAKE_SOURCE_DIR}/src/ui/window.cpp
+    ${CMAKE_SOURCE_DIR}/src/logging/serial_logging.cpp
+    ${CMAKE_SOURCE_DIR}/src/abi/icxx_guard.cpp
+    ${CMAKE_SOURCE_DIR}/src/abi/icxx_pure_virtual.cpp
 )
 
 # Object library that builds all kernel sources
@@ -35,6 +41,7 @@ target_compile_options(kernel_obj PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:
         -m32
         -ffreestanding
+        # -fno-threadsafe-statics
         -fno-exceptions
         -fno-rtti
         -fno-pic

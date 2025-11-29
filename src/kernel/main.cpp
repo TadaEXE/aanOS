@@ -1,18 +1,18 @@
 #include <cstdint>
 
-#include "hw/boot/multiboot2.hpp"
+// #include "/boot/multiboot2.hpp"
 #include "hw/console/text_mode_console.hpp"
 #include "hw/graphics/framebuffer.hpp"
 #include "input/editor.hpp"
-
-#include <cstdint>
-
-
+#include "logging/logging.hpp"
+#include "ui/window.hpp"
 
 extern "C" void kmain(uint32_t mb2_info_addr) {
+  log::msg("editOS starting...");
+
   hw::multiboot2::FramebufferInfo fi{};
   if (hw::multiboot2::find_framebuffer(mb2_info_addr, fi)) {
-    hw::graphics::Framebuffer fb{fi};
+    x86::graphics::Framebuffer fb{fi};
 
     if (fb.valid()) {
       fb.clear(0xFFFF00FF);
@@ -32,9 +32,8 @@ extern "C" void kmain(uint32_t mb2_info_addr) {
 
   hw::console::TextModeConsole console;
   console.init();
-  const char *msg =
-      "No suitable framebuffer from Multiboot2, falling back to text editor.\n";
-  for (const char *p = msg; *p; ++p) {
+  const char* msg = "No suitable framebuffer from Multiboot2, falling back to text editor.\n";
+  for (const char* p = msg; *p; ++p) {
     console.write_char(*p);
   }
 
