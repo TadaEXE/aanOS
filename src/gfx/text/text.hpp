@@ -12,7 +12,8 @@ struct Style {
   Color bg;
   bool draw_bg;
   uint32_t scale{1};
-  int32_t gap{0};
+  int32_t gap_x{0};
+  int32_t gap_y{0};
 };
 
 class TextRenderer {

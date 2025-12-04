@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 
+#include "kernel/logging/logging.hpp"
+
 namespace hal {
 
 // This enum is brought to you by the medium mighty ChatGPT
@@ -170,12 +172,25 @@ inline bool any(KeyMod m) noexcept {
 KeyMod modifier_for_key(Key key) noexcept;
 bool is_lock_key(Key key) noexcept;
 
-struct KeyEvent {
+struct KeyEvent : logging::Loggable {
   Key key;
   KeyEventType type;
   KeyMod mods;
   uint8_t scan_code;
   bool extended;
+
+  constexpr KeyEvent() = default;
+  constexpr KeyEvent(Key key, KeyEventType type, KeyMod mods, uint8_t scan_code,
+                     bool extended)
+      : key(key), type(type), mods(mods), scan_code(scan_code), extended(extended) {}
+
+  static constexpr const char* fmt() noexcept {
+    return "{key: %x, type: %u, mods: %x, scan_code: %x, extended: %u}";
+  }
+
+  void log_self() const noexcept override {
+    log_obj<KeyEvent>(key, type, mods, scan_code, extended);
+  }
 };
 
 class Keyboard {

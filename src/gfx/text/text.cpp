@@ -32,7 +32,7 @@ void TextRenderer::draw_glyph(char c) {
     }
   }
 
-  last_x += (font.glyph_width + style.gap) * style.scale;
+  last_x += (font.glyph_width + style.gap_x) * style.scale;
 }
 
 void TextRenderer::draw_glyph(char c, uint32_t x, uint32_t y) {

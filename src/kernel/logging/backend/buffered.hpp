@@ -6,6 +6,7 @@
 
 namespace logging::backend {
 
+/// Do not use! Performs like shit.
 template <size_t MaxSubCount>
 class BufferedSink final : public LoggingSink {
  public:
@@ -26,7 +27,7 @@ class BufferedSink final : public LoggingSink {
   }
 
   void put_char(char c) noexcept override {
-    if (buffer_len >= max_buffer_len) return;
+    if (buffer_len >= max_buffer_len) grow();
 
     buffer[buffer_len++] = c;
     forward_to_subs(c);
@@ -48,6 +49,7 @@ class BufferedSink final : public LoggingSink {
   void grow() {
     memmove(buffer, buffer + (max_buffer_len - buffer_end_chunk), buffer_end_chunk);
     buffer_len = buffer_end_chunk;
+    buffer_len = 0;
   }
 
   LoggingSink* subs[MaxSubCount];

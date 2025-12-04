@@ -13,7 +13,7 @@ class TextArea {
   void put_text(const char* text);
   void remove_last();
   void remove_next();
-  void draw();
+  void redraw();
 
   void move_cursor(gfx::Point np);
 
@@ -21,6 +21,9 @@ class TextArea {
   void scroll_down(size_t s);
 
  private:
+  void draw_rel() {
+
+  }
   gfx::Rect area;
   gfx::Canvas& canvas;
   gfx::text::TextRenderer tr;

@@ -10,7 +10,7 @@ void TextArea::put_char(char c) {
 void TextArea::put_text(const char* text) {
   if (!text) return;
 
-  for(const char* c = text; *c; c++) {
+  for (const char* c = text; *c; c++) {
     put_char(*c);
   }
 }
@@ -27,7 +27,7 @@ void TextArea::move_cursor(gfx::Point np) {
   buffer.move_to(np.x);
 }
 
-void TextArea::draw() {
+void TextArea::redraw() {
   canvas.clear(style.bg, area);
   text_cursor = {0, 0};
 
@@ -46,7 +46,7 @@ void TextArea::draw() {
       continue;
     }
 
-    if (px + ((text_cursor.x + style.gap) * tr.font.glyph_width * style.scale) >=
+    if (px + ((text_cursor.x + style.gap_x) * tr.font.glyph_width * style.scale) >=
         area.end_x()) {
       py += tr.font.glyph_height;
       tr.set_pos(px, py);
