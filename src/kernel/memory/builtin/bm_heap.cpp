@@ -77,7 +77,7 @@ void* BmHeap::alloc(size_t size, size_t align) noexcept {
 
       if (run_len == 0) {
         uintptr_t candidate = data_addr + i * block->div_size;
-        if ((candidate & align) != 0) { continue; }
+        if ((candidate % align) != 0) { continue; }
         run_start = i;
         run_len = 1;
       } else {

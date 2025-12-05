@@ -1,0 +1,20 @@
+#pragma once
+
+#include "kernel/memory/heap.hpp"
+
+namespace mem {
+
+constexpr size_t HEAP_SIZE = 1024 * 1024;
+
+class BumpHeap : public Heap {
+ public:
+  void init(uintptr_t addr, size_t size = 1 * MiB) noexcept override {
+    (void)addr;
+    (void)size;
+  };
+
+  void* alloc(size_t size, size_t align = alignof(max_align_t)) noexcept override;
+  void free(void* ptr) noexcept override;
+  void reset() noexcept;
+};
+}  // namespace mem

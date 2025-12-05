@@ -9,7 +9,7 @@
 namespace bits {
 
 static constexpr bool ipo2(size_t x) {
-  return (x & (x - 1)) != 0;
+  return (x & (x - 1)) == 0;
 }
 
 static constexpr size_t oiz(size_t x) {

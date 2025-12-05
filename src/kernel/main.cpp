@@ -7,9 +7,7 @@
 #include "hal/keyboard.hpp"
 #include "input/keymap_us.hpp"
 #include "kernel/log.hpp"
-#include "kernel/memory/builtin/bm_heap.hpp"
 #include "kernel/memory/byte_conversion.hpp"
-#include "kernel/memory/heap.hpp"
 #include "kernel/panic.hpp"
 #include "logging/backend/callback.hpp"
 #include "logging/backend/serial.hpp"
@@ -78,9 +76,6 @@ logging::backend::LoggingSink* make_gui_logging(gfx::Canvas& can) {
               boot::MemoryRegionTypeName(e.type));
     }
 
-    auto* kernel_heap = mem::get_heap<mem::builtin::BmHeap>();
-    mem::init_heap(kernel_heap, ctx.ram_start_addr, 32 * mem::MiB);
-    mem::set_kernel_heap(*kernel_heap);
     log_msg("Kernel heap (%d MiB) initialized at %p", 32, ctx.ram_start_addr);
   }
 
@@ -106,7 +101,6 @@ logging::backend::LoggingSink* make_gui_logging(gfx::Canvas& can) {
     hal::KeyEvent ev{};
     char c;
     if (kb.poll(ev)) {
-      log_msg("Got key event %o", &ev);
       if (ev.key == Key::Backspace && ev.type == hal::KeyEventType::Press) {
         terminal.remove_last();
       } else if (input::key_event_to_char(ev, c)) {

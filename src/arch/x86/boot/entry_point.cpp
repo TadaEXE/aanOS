@@ -6,6 +6,8 @@
 #include "hal/boot.hpp"
 #include "kernel/boot/boot_context.hpp"
 #include "kernel/log.hpp"
+#include "kernel/memory/builtin/bm_heap.hpp"
+#include "kernel/memory/heap.hpp"
 #include "kernel/panic.hpp"
 
 using namespace x86;
@@ -24,10 +26,9 @@ void setup_boot_fb(boot::BootContext& ctx) {
   }
 }
 
-/// This function is very broken
 void make_mem_map(boot::BootContext& ctx) {
   static boot::MemoryRegion regions[16];
-  static size_t count = 0;
+  size_t count = 0;
 
   mb2::MmapTag* mmap = nullptr;
   if (!mb2::load_tag<mb2::TagType::Mmap>(&mmap)) {
@@ -99,6 +100,9 @@ extern "C" void kmain(uint32_t mb2_info_addr) {
   make_basic_mem(ctx);
   make_mem_map(ctx);
   ctx.ram_start_addr = reinterpret_cast<uintptr_t>(&_ld_kernel_end_addr);
+  auto* kernel_heap = mem::get_heap<mem::builtin::BmHeap>();
+  mem::init_heap(kernel_heap, ctx.ram_start_addr, 32 * mem::MiB);
+  mem::set_kernel_heap(*kernel_heap);
 
   const char* str;
   if (mb2::get_cmdline(&str))
