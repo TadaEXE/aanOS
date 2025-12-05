@@ -18,7 +18,7 @@ struct CommandContext {
   std::string_view* argv;
 };
 
-using CommandFn = void (*)(CommandContext&);
+using CommandFn = int (*)(CommandContext&);
 
 struct Command {
   std::string_view name;

@@ -1,35 +1,57 @@
 #include "kernel/shell/shell.hpp"
 
 #include <cstddef>
+#include <cstring>
 #include <string_view>
 
+#include "hal/system.hpp"
 #include "kernel/containers/string.hpp"
 #include "kernel/tty/tty.hpp"
 
 namespace shell {
 namespace builtin {
 
-void cmd_help(CommandContext& ctx) noexcept {
+int cmd_help(CommandContext& ctx) noexcept {
   ctx.tty.write_line("Available commands:");
   for (size_t i = 0; i < ctx.shell.cmd_count(); ++i) {
     const auto& cmd = ctx.shell.get_cmd(i);
 
-    ctx.tty.write(std::string_view{"    "});
     ctx.tty.write(cmd.name);
     if (!cmd.help.empty()) {
-      ctx.tty.write(std::string_view{" - "});
+      ctx.tty.write_line(std::string_view{" - "});
       ctx.tty.write(cmd.help);
     }
-    ctx.tty.write_char('\n');
+    ctx.tty.write_line("\n\n");
   }
+
+  return 0;
 }
 
-void cmd_echo(CommandContext& ctx) noexcept {
+int cmd_echo(CommandContext& ctx) noexcept {
   for (size_t i = 1; i < ctx.argc; ++i) {
     ctx.tty.write(ctx.argv[i]);
     if (i + 1 < ctx.argc) { ctx.tty.write(std::string_view(" ")); }
   }
   ctx.tty.write_char('\n');
+  return 0;
+}
+
+static constexpr std::string_view SYS_OPT_REBOOT = "reboot";
+static constexpr std::string_view SYS_OPT_SHUTDOWN = "shutdown";
+
+int cmd_sys(CommandContext& ctx) noexcept {
+  if (ctx.argc != 2) return 1;
+
+  auto& opt = ctx.argv[1];
+  if (strncmp(opt.data(), SYS_OPT_REBOOT.data(), opt.size()) == 0) {
+    ctx.tty.write_line("Reboot...");
+    hal::sys::reboot();
+  } else if (strncmp(opt.data(), SYS_OPT_SHUTDOWN.data(), opt.size()) == 0) {
+    ctx.tty.write_line("Shutdown...");
+    hal::sys::shutdown();
+  }
+
+  return 1;
 }
 
 }  // namespace builtin
@@ -63,6 +85,18 @@ void Shell::register_builtin_commands() noexcept {
       .fn = &builtin::cmd_echo,
   };
   register_command(echo_cmd);
+
+  Command sys_cmd{
+      .name = "sys",
+      .help =
+          "Control system \n"
+          "sys [COMMAND]\n"
+          "Commands:\n"
+          "    reboot\n"
+          "    shutdown",
+      .fn = &builtin::cmd_sys,
+  };
+  register_command(sys_cmd);
 }
 
 void Shell::set_prompt(std::string_view prompt) noexcept {

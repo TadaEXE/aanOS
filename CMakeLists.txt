@@ -15,7 +15,7 @@ set(ARCH_SOURCES
     ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/boot/boot.s
     ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/boot/entry_point.cpp
 
-    # ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/console/text_mode_console.cpp
+    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/system/system.cpp
 
     ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/graphics/framebuffer.cpp
 
