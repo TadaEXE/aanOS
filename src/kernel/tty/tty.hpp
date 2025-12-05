@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstddef>
 #include <string_view>
 
 #include "hal/keyboard.hpp"
@@ -29,12 +28,12 @@ class Tty {
 
   char read_char_blocking() noexcept;
 
-  size_t readline(char* out, size_t capacity, std::string_view prompt) noexcept;
   void readline(ctr::String& out, std::string_view prompt) noexcept;
 
  private:
   Display& display;
   hal::Keyboard& keyboard;
+  bool raw_mode = false;
 };
 
 }  // namespace tty

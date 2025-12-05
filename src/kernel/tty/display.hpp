@@ -22,6 +22,7 @@ class Display {
   virtual void move_up(size_t amount) noexcept = 0;
   virtual void move_down(size_t amount) noexcept = 0;
 
+  virtual void move_line_end() noexcept = 0;
   virtual void move_end() noexcept = 0;
 
   virtual gfx::Point cursor() noexcept = 0;

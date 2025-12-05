@@ -1,6 +1,5 @@
 #include "kernel/tty/tty.hpp"
 
-#include <cstddef>
 #include <string_view>
 
 #include "hal/keyboard.hpp"
@@ -47,45 +46,6 @@ char Tty::read_char_blocking() noexcept {
   }
 }
 
-size_t Tty::readline(char* out, size_t capacity, std::string_view prompt) noexcept {
-  if (!out || !capacity) return 0;
-
-  size_t len = 0;
-  write(prompt);
-
-  for (;;) {
-    hal::KeyEvent ev{};
-    char c = 0;
-
-    if (!keyboard.poll(ev)) continue;
-    if (ev.type == hal::KeyEventType::Release) continue;
-
-    if (ev.key == hal::Key::Backspace) {
-      if (len > 0) {
-        --len;
-        display.backspace();
-        display.flush();
-      }
-      continue;
-    }
-
-    if (!input::key_event_to_char(ev, c)) continue;
-
-    if (c == '\n' || c == '\r') {
-      out[len] = '\0';
-      display.put_char('\n');
-      display.flush();
-      return len;
-    }
-
-    if (len + 1 < capacity) {
-      out[len++] = c;
-      display.put_char(c);
-      display.flush();
-    }
-  }
-}
-
 void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
   out.clear();
   write(prompt);
@@ -96,33 +56,6 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
 
     if (!keyboard.poll(ev)) continue;
     if (ev.type == hal::KeyEventType::Release) continue;
-
-    if (ev.key == hal::Key::Backspace) {
-      if (!out.empty()) {
-        out.pop_back();
-        display.backspace();
-        display.flush();
-      }
-      continue;
-    }
-
-    if (ev.key == hal::Key::PageUp) {
-      display.scroll_up(1);
-      display.flush();
-      continue;
-    }
-
-    if (ev.key == hal::Key::PageDown) {
-      display.scroll_down(1);
-      display.flush();
-      continue;
-    }
-
-    if (ev.key == hal::Key::Right) {
-      display.move_right(1);
-      display.flush();
-      continue;
-    }
 
     if (!input::key_event_to_char(ev, c)) {
       using hal::Key;
@@ -137,13 +70,13 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
           display.move_right(1);
           break;
         case Key::Left:
-          if (display.cursor().x > prompt.size()) { display.move_left(1); }
+          if (display.cursor().x > prompt.size() && !raw_mode) { display.move_left(1); }
           break;
         case Key::Up:
-          display.move_up(1);
+          if (raw_mode) display.move_up(1);
           break;
         case Key::Down:
-          display.move_down(1);
+          if (raw_mode) display.move_down(1);
           break;
         case Key::PageUp:
           display.scroll_up(1);
@@ -151,19 +84,22 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
         case Key::PageDown:
           display.scroll_down(1);
           break;
-        case Key::End:
-          display.move_end();
+        case Key::End: {
+          if (ev.has_mod(hal::KeyMod::Ctrl)) {
+            display.move_end();
+          } else {
+            display.move_line_end();
+          }
           break;
+        }
         default:
-          break;
+          continue;
       }
       display.flush();
       continue;
-    }
-
-    if (c == '\n' || c == '\r') {
+    } else if (c == '\n' || c == '\r') {
       display.move_end();
-      display.flush();
+      display.move_line_end();
       display.put_char('\n');
       display.flush();
       return;

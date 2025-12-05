@@ -28,6 +28,7 @@ class TtyTextArea : public tty::Display {
   void move_right(size_t amount) noexcept override;
   void move_up(size_t amount) noexcept override;
   void move_down(size_t amount) noexcept override;
+  void move_line_end() noexcept override;
   void move_end() noexcept override;
 
   gfx::Point cursor() noexcept override { return area.cursor_pos(); }

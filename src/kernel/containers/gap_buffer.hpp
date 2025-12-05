@@ -90,8 +90,8 @@ class GapBuffer {
   void move_right(size_t count = 1) {
     if (!count) return;
 
-    size_t suffix_len = length - static_cast<size_t>(gap_end - begin);
-    if (count > suffix_len) { count = suffix_len; }
+    size_t suffix_len = length - static_cast<size_t>(gap_end - begin) - 1;
+    if (count > suffix_len) { grow(count); }
     if (!count) return;
 
     memmove(gap_begin, gap_end, count * sizeof(T));
@@ -111,7 +111,7 @@ class GapBuffer {
   }
 
   void move_to(size_t index) {
-    if (index > length) { index = length; }
+    if (index >= length) { index = length; }
 
     size_t cp = cursor_pos();
     if (index < cp) {

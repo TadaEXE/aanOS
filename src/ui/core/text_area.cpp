@@ -2,10 +2,9 @@
 
 namespace ui {
 
-void TextArea::put_char(char c) {
+void TextArea::put_char(char c) noexcept {
   buffer.insert(&c);
   ++target_cursor.x;
-  ++real_cursor_idx;
   if (c == '\n' || c == '\r') {
     ++target_cursor.y;
     target_cursor.x = 0;
@@ -13,7 +12,7 @@ void TextArea::put_char(char c) {
   }
 }
 
-void TextArea::put_text(const char* text) {
+void TextArea::put_text(const char* text) noexcept {
   if (!text) return;
 
   for (const char* c = text; *c; c++) {
@@ -21,20 +20,28 @@ void TextArea::put_text(const char* text) {
   }
 }
 
-void TextArea::remove_last() {
+void TextArea::remove_last() noexcept {
+  buffer.delete_left();
+  --target_cursor.x;
+}
+
+void TextArea::remove_next() noexcept {
   buffer.delete_left();
 }
 
-void TextArea::remove_next() {
-  buffer.delete_left();
+void TextArea::move_cursor(gfx::Point np) noexcept {
+  if (np.y >= lines) np.y = lines;
+
+  const auto start = line_start_index(np.y);
+  const auto end = line_end_index(start);
+  const auto line_len = (end + 1) - start;
+
+  auto idx = np.x > line_len ? end : start + np.x;
+  buffer.move_to(idx);
+  target_cursor = {idx - start, np.y};
 }
 
-void TextArea::move_cursor(gfx::Point np) {
-  target_cursor = np;
-  if (target_cursor.y > lines) target_cursor.y = lines;
-}
-
-void TextArea::redraw() {
+void TextArea::redraw() noexcept {
   canvas.clear(style.bg, area);
   gfx::Point draw_pos{0, 0};
 
@@ -65,7 +72,7 @@ void TextArea::redraw() {
   uint32_t py = area.y;
   tr.set_pos(px, py);
 
-  const auto gw = (tr.font.glyph_width + style.gap_x) * style.scale;
+  const auto gw = eff_glyph_width();
   const auto gh = line_height();
 
   size_t current_line = 0;
@@ -91,6 +98,8 @@ void TextArea::redraw() {
     // because we are not counting the number of linewraps among the visible lines beforehand.
     // TODO: Fix this later
     if (next_x >= area.end_x()) {
+      break;
+
       ++current_line;
       if (current_line >= cap) break;
 
@@ -105,23 +114,11 @@ void TextArea::redraw() {
       real_cursor.x = draw_pos.x;
     }
 
-    if (draw_pos == real_cursor) {
-      real_cursor_idx = i;
-      tr.draw_glyph(g, true);
-    } else {
-      tr.draw_glyph(g);
-    }
-
+    tr.draw_glyph(g, draw_pos == real_cursor);
     ++draw_pos.x;
   }
 
-  if (draw_pos.y == target_cursor.y && draw_pos.x <= target_cursor.x) {
-    real_cursor.x = draw_pos.x;
-    real_cursor_idx = buffer.count();
-  }
-
-  tr.draw_glyph(' ', draw_pos == real_cursor);
-  buffer.move_to(real_cursor_idx);
+  if (draw_pos == real_cursor) { tr.draw_glyph(' ', true); }
 }
 
 void TextArea::scroll_up(size_t amount) {
@@ -167,14 +164,10 @@ void TextArea::scroll_down(size_t amount) {
   }
 }
 
-size_t TextArea::current_line_length() const noexcept {
-  if (real_cursor.y == lines) { return buffer.count() - real_cursor_idx; }
-
-  size_t count = real_cursor.x;
-  for (size_t i = real_cursor_idx; i < buffer.count() && buffer[i] && buffer[i] != '\n';
-       ++i, ++count) {}
-
-  return count;
+size_t TextArea::length_of_line(size_t line) const noexcept {
+  const auto start = line_start_index(line);
+  const auto end = line_end_index(start);
+  return end - start;
 }
 
 size_t TextArea::visible_line_capacity() const noexcept {
@@ -214,11 +207,30 @@ size_t TextArea::line_start_index(size_t line) const noexcept {
       if (cur == line) { return i + 1; }
     }
   }
+
+  return n;
+}
+
+size_t TextArea::line_end_index(size_t start_idx) const noexcept {
+  const auto n = buffer.count();
+
+  for (size_t i = start_idx; i < n; ++i) {
+    if (buffer[i] == '\n') return i;
+  }
+
   return n;
 }
 
 size_t TextArea::line_height() const noexcept {
   return (tr.font.glyph_height + style.gap_y) * style.scale;
+}
+
+size_t TextArea::eff_glyph_width() const noexcept {
+  return (tr.font.glyph_width + style.gap_x) * style.scale;
+}
+
+size_t TextArea::max_line_length() const noexcept {
+  return area.w / eff_glyph_width();
 }
 
 }  // namespace ui

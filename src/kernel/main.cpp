@@ -10,6 +10,7 @@
 #include "kernel/log.hpp"
 #include "kernel/memory/byte_conversion.hpp"
 #include "kernel/panic.hpp"
+#include "kernel/shell/shell.hpp"
 #include "kernel/tty/tty.hpp"
 #include "logging/backend/serial.hpp"
 #include "logging/logging.hpp"
@@ -38,25 +39,6 @@ logging::backend::LoggingSink* setup_logging(boot::BootContext& ctx) {
   return nullptr;
 }
 
-// logging::backend::LoggingSink* make_gui_logging(gfx::Canvas& can) {
-//   gfx::Rect logging_area{can.width() - 400, 0, 400, can.height()};
-//   logging_area -= 10;
-//
-//   ui::Window win{logging_area};
-//   win.draw(can);
-//
-//   gfx::text::Style style{gfx::Color::Black(), gfx::Color::White(), false, 1, -2};
-//   static ui::TextArea logging_output{logging_area, can, style};
-//   static logging::backend::CallbackSink cb_sink(
-//       [](char c, void* ctx) {
-//         auto* ta = reinterpret_cast<ui::TextArea*>(ctx);
-//         ta->put_char(c);
-//         ta->redraw();
-//       },
-//       &logging_output);
-//
-//   return &cb_sink;
-// }
 }  // namespace
 
 [[noreturn]] void hal::enter_kernel(boot::BootContext& ctx) {
@@ -95,13 +77,11 @@ logging::backend::LoggingSink* setup_logging(boot::BootContext& ctx) {
   tty_win.draw(can);
 
   gfx::text::Style style{gfx::Color::Black(), gfx::Color::White(), false, 1, -2, 1};
-  ui::TextArea area{tty_rect, can, style};
-  ui::TtyTextArea tty_area(area);
-  tty::Tty tty{tty_area, kb};
+  ui::TextArea tty_area{tty_rect, can, style};
+  ui::TtyTextArea tty_display(tty_area);
+  tty::Tty tty{tty_display, kb};
+  shell::Shell shell{tty};
+  shell.register_builtin_commands();
 
-  ctr::String sl;
-  for (;;) {
-    tty.readline(sl, "#>");
-    tty.write_line(sl);
-  }
+  shell.run();
 }

@@ -21,11 +21,17 @@ struct Point : public logging::Loggable {
 
   bool operator!=(const Point& other) const noexcept { return !operator==(other); }
 
+  Point& operator-=(int32_t t);
+  Point& operator+=(int32_t t);
+
   void log_self() const noexcept override { log_obj<Point>(x, y); }
 };
 
 Point operator-(Point a, Point b);
 Point operator+(Point a, Point b);
+
+Point operator-(Point a, int32_t t);
+Point operator+(Point a, int32_t t);
 
 struct Line : public logging::Loggable {
   uint32_t s;

@@ -14,28 +14,36 @@ class TextArea {
   TextArea(gfx::Rect area, gfx::Canvas& canvas, gfx::text::Style style)
       : area(area), canvas(canvas), tr(canvas, style), style(style) {}
 
-  void put_char(char c);
-  void put_text(const char* text);
+  void put_char(char c) noexcept;
+  void put_text(const char* text) noexcept;
 
-  void remove_last();
-  void remove_next();
+  void remove_last() noexcept;
+  void remove_next() noexcept;
 
-  void redraw();
+  void redraw() noexcept;
 
-  void move_cursor(gfx::Point np);
+  void move_cursor(gfx::Point np) noexcept;
 
   void scroll_up(size_t amount = 1);
   void scroll_down(size_t amount = 1);
 
-  gfx::Point cursor_pos() const { return real_cursor; }
+  gfx::Point target_pos() const noexcept { return target_cursor; }
+
+  gfx::Point cursor_pos() const noexcept { return real_cursor; }
 
   size_t current_line_length() const noexcept;
+  size_t length_of_line(size_t line) const noexcept;
+
+  size_t line_count() const noexcept { return lines; }
 
  private:
   size_t visible_line_capacity() const noexcept;
   size_t count_lines() noexcept;
   size_t line_start_index(size_t line) const noexcept;
+  size_t line_end_index(size_t start_idx) const noexcept;
   size_t line_height() const noexcept;
+  size_t eff_glyph_width() const noexcept;
+  size_t max_line_length() const noexcept;
 
   gfx::Rect area;
   gfx::Canvas& canvas;
@@ -46,7 +54,6 @@ class TextArea {
   gfx::Point target_cursor{0, 0};
 
   ctr::GapBuffer<char, 16> buffer{};
-  size_t real_cursor_idx{0};
 
   size_t lines{0};
   size_t first_visible_line{0};

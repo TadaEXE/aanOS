@@ -102,6 +102,17 @@ extern "C" size_t strlen(const char* start) {
   return end - start;
 }
 
+extern "C" int memcmp(const void* lhs, const void* rhs, size_t count) noexcept {
+  auto* a = static_cast<const unsigned char*>(lhs);
+  auto* b = static_cast<const unsigned char*>(rhs);
+
+  for (size_t i = 0; i < count; ++i) {
+    if (a[i] != b[i]) { return (a[i] < b[i]) ? -1 : 1; }
+  }
+
+  return 0;
+}
+
 namespace std {
 
 void* memset(void* dest, int ch, size_t count) {
@@ -114,6 +125,10 @@ void* memcpy(void* dest, const void* src, size_t count) {
 
 void* memmove(void* dest, const void* src, size_t count) {
   return ::memmove(dest, src, count);
+}
+
+int memcmp(const void* lhs, const void* rhs, size_t count) {
+  return ::memcmp(lhs, rhs, count);
 }
 
 size_t strlen(const char* start) {

@@ -14,6 +14,28 @@ Point operator+(Point a, Point b) {
   return a;
 }
 
+Point& Point::operator-=(int32_t t) {
+  x -= t;
+  y -= t;
+  return *this;
+}
+
+Point& Point::operator+=(int32_t t) {
+  x += t;
+  y += t;
+  return *this;
+}
+
+Point operator+(Point a, int32_t t) {
+  a += t;
+  return a;
+}
+
+Point operator-(Point a, int32_t t) {
+  a -= t;
+  return a;
+}
+
 Rect& Rect::operator-=(int32_t t) {
   x += t;
   y += t;
