@@ -18,6 +18,11 @@ class BmHeap : public Heap {
  public:
   BmHeap() = default;
 
+  BmHeap(const BmHeap&) = delete;
+  BmHeap(BmHeap&&) = delete;
+  BmHeap& operator=(const BmHeap&) = default;
+  BmHeap& operator=(BmHeap&&) = delete;
+
   BmHeap(uintptr_t addr, size_t size, size_t default_div_size = 16)
       : default_div_size(default_div_size) {
     init(addr, size);

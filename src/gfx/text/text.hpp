@@ -18,6 +18,11 @@ struct Style {
 
 class TextRenderer {
  public:
+  TextRenderer(const TextRenderer&) = default;
+  TextRenderer(TextRenderer&&) = default;
+  TextRenderer& operator=(const TextRenderer&) = delete;
+  TextRenderer& operator=(TextRenderer&&) = delete;
+
   TextRenderer(Canvas& canvas, Style style, BitmapFont& font)
       : font(font), canvas(canvas), style(style) {}
 

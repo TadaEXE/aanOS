@@ -1,8 +1,8 @@
 #pragma once
 #include <optional>
 
-#include "kernel/boot/boot_context.hpp"
 #include "hal/framebuffer.hpp"
+#include "kernel/boot/boot_context.hpp"
 
 namespace hal {
 
@@ -17,6 +17,8 @@ class BootFramebuffer {
     return instance;
   }
 
+  BootFramebuffer(BootFramebuffer&&) = delete;
+  BootFramebuffer& operator=(BootFramebuffer&&) = delete;
   BootFramebuffer(const BootFramebuffer&) = delete;
   void operator=(const BootFramebuffer&) = delete;
 

@@ -10,6 +10,11 @@ class Widget {
   virtual ~Widget() = default;
   Widget() = default;
 
+  Widget(const Widget&) = default;
+  Widget(Widget&&) = delete;
+  Widget& operator=(const Widget&) = default;
+  Widget& operator=(Widget&&) = delete;
+
   Widget(uint32_t x, uint32_t y) : x(x), y(y) {}
 
   virtual void draw(gfx::Canvas& canvas) noexcept = 0;

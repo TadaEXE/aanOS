@@ -24,6 +24,11 @@ constexpr const char* ArchName(ArchKind arch) {
   }
 }
 
+enum class Bootflags : uint8_t {
+  None = 0b00000000,
+  NoGUI = 0b00000001,
+};
+
 enum class BootLoaderKind : uint8_t {
   Unknown = 0,
   Multiboot2,

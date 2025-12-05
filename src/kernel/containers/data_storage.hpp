@@ -17,6 +17,11 @@ class StackStorage : public mem::DataView<T> {
  public:
   StackStorage() : mem::DataView<T>(buffer, Size) {}
 
+  StackStorage(const StackStorage&) = delete;
+  StackStorage(StackStorage&&) = delete;
+  StackStorage& operator=(const StackStorage&) = delete;
+  StackStorage& operator=(StackStorage&&) = delete;
+
  private:
   T buffer[Size];
 };
@@ -32,6 +37,11 @@ class HeapStorage : public mem::DataView<T> {
         buffer(mem::alloc<T>(capacity, alignof(T))) {
     this->begin = buffer;
   }
+
+  HeapStorage(const HeapStorage&) = delete;
+  HeapStorage(HeapStorage&&) = delete;
+  HeapStorage& operator=(const HeapStorage&) = delete;
+  HeapStorage& operator=(HeapStorage&&) = delete;
 
  protected:
   bool grow_to(size_t len) noexcept override {

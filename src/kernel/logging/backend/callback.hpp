@@ -7,6 +7,11 @@ namespace logging::backend {
 
 class CallbackSink final : public LoggingSink {
  public:
+  CallbackSink(const CallbackSink&) = delete;
+  CallbackSink(CallbackSink&&) = delete;
+  CallbackSink& operator=(const CallbackSink&) = default;
+  CallbackSink& operator=(CallbackSink&&) = default;
+
   explicit CallbackSink(void (*put_char_cb)(char c, void* ctx), void* ctx)
       : put_char_cb(put_char_cb), ctx(ctx) {}
 

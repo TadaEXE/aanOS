@@ -23,6 +23,8 @@ class PS2Keyboard : public hal::Keyboard {
     return instance;
   }
 
+  PS2Keyboard(PS2Keyboard&&) = delete;
+  PS2Keyboard& operator=(PS2Keyboard&&) = delete;
   PS2Keyboard(const PS2Keyboard&) = delete;
   void operator=(const PS2Keyboard&) = delete;
 

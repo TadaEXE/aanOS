@@ -12,6 +12,11 @@ class BufferedSink final : public LoggingSink {
  public:
   BufferedSink() = default;
 
+  BufferedSink(const BufferedSink&) = delete;
+  BufferedSink(BufferedSink&&) = delete;
+  BufferedSink& operator=(const BufferedSink&) = delete;
+  BufferedSink& operator=(BufferedSink&&) = delete;
+
   bool add_sub(LoggingSink* sub) {
     if (sub_count >= MaxSubCount) return false;
 

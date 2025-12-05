@@ -76,6 +76,32 @@ extern "C" void* memmove(void* __restrict__ dest, const void* __restrict__ src,
   return dest;
 }
 
+/// This implementation does not conform to the specification. Which says:
+/// "The parameter destlen specifies the size of the object dest. If len exceeds destlen, the function shall abort, and the program calling it shall exit."
+/// Instead of aborting, len will be clamped to destlen.
+extern "C" void* __memcpy_chk(void* __restrict__ dest, const void* __restrict__ src,
+                              size_t len, size_t destlen) {
+  if (len > destlen) len = destlen;
+  return memcpy(dest, src, len);
+}
+
+/// This implementation does not conform to the specification. Which says:
+/// "The parameter destlen specifies the size of the object dest. If len exceeds destlen, the function shall abort, and the program calling it shall exit."
+/// Instead of aborting, len will be clamped to destlen.
+extern "C" void* __memmove_chk(void* __restrict__ dest, const void* __restrict__ src,
+                               size_t len, size_t destlen) {
+  if (len > destlen) len = destlen;
+  return memmove(dest, src, len);
+}
+
+extern "C" size_t strlen(const char* start) {
+  if (!start) return 0;
+  const char* end = start;
+  while (*end != '\0')
+    ++end;
+  return end - start;
+}
+
 namespace std {
 
 void* memset(void* dest, int ch, size_t count) {
@@ -88,6 +114,10 @@ void* memcpy(void* dest, const void* src, size_t count) {
 
 void* memmove(void* dest, const void* src, size_t count) {
   return ::memmove(dest, src, count);
+}
+
+size_t strlen(const char* start) {
+  return ::strlen(start);
 }
 
 }  // namespace std

@@ -20,6 +20,11 @@ constexpr uint16_t PORT_TO_BASE(hal::SerialPort port) {
 
 class SerialBus final : public hal::SerialBus {
  public:
+  SerialBus(const SerialBus&) = delete;
+  SerialBus(SerialBus&&) = delete;
+  SerialBus& operator=(const SerialBus&) = delete;
+  SerialBus& operator=(SerialBus&&) = delete;
+
   SerialBus(hal::SerialPort port)
       : com_base(PORT_TO_BASE(port)),
         data(com_base + 0),

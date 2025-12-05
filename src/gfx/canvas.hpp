@@ -9,6 +9,11 @@ namespace gfx {
 
 class Canvas {
  public:
+  Canvas(const Canvas&) = delete;
+  Canvas(Canvas&&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+  Canvas& operator=(Canvas&&) = delete;
+
   explicit Canvas(hal::Framebuffer& fb) : fb(fb) {}
 
   uint32_t width() const noexcept { return fb.get_width(); }

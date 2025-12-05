@@ -13,6 +13,11 @@ class Framebuffer : public hal::Framebuffer {
  public:
   Framebuffer() = default;
 
+  Framebuffer(const Framebuffer&) = delete;
+  Framebuffer(Framebuffer&&) = delete;
+  Framebuffer& operator=(const Framebuffer&) = default;
+  Framebuffer& operator=(Framebuffer&&) = default;
+
   explicit Framebuffer(const mb2::FramebufferTag& info)
       : addr(reinterpret_cast<uint8_t*>(static_cast<uintptr_t>(info.addr))),
         pitch(info.pitch),

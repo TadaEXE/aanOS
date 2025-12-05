@@ -19,6 +19,11 @@ class DataView {
  public:
   virtual ~DataView() = default;
 
+  DataView(const DataView&) = delete;
+  DataView(DataView&&) = delete;
+  DataView& operator=(const DataView&) = delete;
+  DataView& operator=(DataView&&) = delete;
+
   DataView(T* begin, size_t length) : begin(begin), length(length) {}
 
   virtual bool seek(size_t amount, SeekType type) noexcept {

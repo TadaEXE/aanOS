@@ -11,6 +11,12 @@ template <typename Key, typename Val, size_t Capacity>
   requires std::is_default_constructible_v<Key> && std::is_default_constructible_v<Val>
 class FlatMap {
  public:
+  FlatMap() = default;
+  FlatMap(const FlatMap&) = delete;
+  FlatMap(FlatMap&&) = delete;
+  FlatMap& operator=(const FlatMap&) = delete;
+  FlatMap& operator=(FlatMap&&) = delete;
+
   bool insert(const Key& key, const Val& val) noexcept {
     if (full()) return false;
 

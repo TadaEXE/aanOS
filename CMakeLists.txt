@@ -37,6 +37,7 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/kernel/boot/multiboot2.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/runtime/cstring.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/logging/logging.cpp
+    ${CMAKE_SOURCE_DIR}/src/kernel/tty/tty.cpp
 
     # ${CMAKE_SOURCE_DIR}/src/apps/editor/editor.cpp
 

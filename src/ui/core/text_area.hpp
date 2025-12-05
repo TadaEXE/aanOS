@@ -6,6 +6,11 @@
 namespace ui {
 class TextArea {
  public:
+  TextArea(const TextArea&) = delete;
+  TextArea(TextArea&&) = delete;
+  TextArea& operator=(const TextArea&) = delete;
+  TextArea& operator=(TextArea&&) = delete;
+
   TextArea(gfx::Rect area, gfx::Canvas& canvas, gfx::text::Style style)
       : area(area), canvas(canvas), tr(canvas, style), style(style) {}
 
@@ -21,15 +26,12 @@ class TextArea {
   void scroll_down(size_t s);
 
  private:
-  void draw_rel() {
-
-  }
   gfx::Rect area;
   gfx::Canvas& canvas;
   gfx::text::TextRenderer tr;
   gfx::text::Style style;
   gfx::Point text_cursor{0, 0};
-  ctr::GapBuffer<char, 16> buffer;
+  ctr::GapBuffer<char, 16> buffer{};
   size_t lines{0};
 };
 }  // namespace ui

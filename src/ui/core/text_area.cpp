@@ -4,7 +4,7 @@ namespace ui {
 
 void TextArea::put_char(char c) {
   buffer.insert(&c);
-  if (c == '\n') ++lines;
+  if (c == '\n' || c == '\r') ++lines;
 }
 
 void TextArea::put_text(const char* text) {
@@ -38,7 +38,7 @@ void TextArea::redraw() {
   for (size_t i = 0; i < buffer.count(); ++i) {
     auto g = buffer[i];
     text_cursor.x++;
-    if (g == '\n') {
+    if (g == '\n' || g == '\r') {
       py += tr.font.glyph_height + 1;
       tr.set_pos(px, py);
       text_cursor.x = 0;

@@ -1,4 +1,4 @@
-#include "input/keymap_us.hpp"
+#include "input/keymap.hpp"
 
 namespace input {
 

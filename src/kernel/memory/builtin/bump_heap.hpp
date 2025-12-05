@@ -8,6 +8,11 @@ constexpr size_t HEAP_SIZE = 1024 * 1024;
 
 class BumpHeap : public Heap {
  public:
+  BumpHeap(const BumpHeap&) = delete;
+  BumpHeap(BumpHeap&&) = delete;
+  BumpHeap& operator=(const BumpHeap&) = delete;
+  BumpHeap& operator=(BumpHeap&&) = delete;
+
   void init(uintptr_t addr, size_t size = 1 * MiB) noexcept override {
     (void)addr;
     (void)size;
