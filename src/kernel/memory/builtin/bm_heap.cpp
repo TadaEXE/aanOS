@@ -54,7 +54,7 @@ void* BmHeap::alloc(size_t size, size_t align) noexcept {
 
   if (align == 0) { align = alignof(max_align_t); }
 
-  if (bits::ipo2(align)) {
+  if (!bits::ipo2(align)) {
     panic("Tried to allocate missaligned memory (Not a power of 2).");
   }
 
