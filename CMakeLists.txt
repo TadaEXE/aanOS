@@ -6,16 +6,26 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_TOOLCHAIN_FILE=cmake/toolchain-x86_64-elf.cmake)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 enable_language(ASM)
 
-set(CMAKE_ASM_COMPILER   x86_64-elf-as)
+set(CMAKE_ASM_COMPILER  x86_64-elf-as)
 set(CMAKE_C_COMPILER   x86_64-elf-gcc)
 set(CMAKE_CXX_COMPILER x86_64-elf-g++)
 
+set(SYSROOT
+  "${CMAKE_SOURCE_DIR}/sysroot"
+  CACHE PATH "Sysroot used for cross builds"
+)
+
 set(ARCH "x86" CACHE STRING "Target architecture (e.g. x86, x86_64)")
+
+set(LIB_C_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libc/src/abort.cpp
+    ${CMAKE_SOURCE_DIR}/src/libc/src/stdio.cpp
+    ${CMAKE_SOURCE_DIR}/src/libc/src/string.cpp
+)
 
 set(ARCH_SOURCES
     ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/boot/boot.s
@@ -45,10 +55,6 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/kernel/tty/tty.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/shell/shell.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc/string.cpp
-    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc/abort.cpp
-    # ${CMAKE_SOURCE_DIR}/src/apps/editor/editor.cpp
-
     ${CMAKE_SOURCE_DIR}/src/gfx/canvas.cpp
     ${CMAKE_SOURCE_DIR}/src/gfx/shapes.cpp
     ${CMAKE_SOURCE_DIR}/src/gfx/text/text.cpp
@@ -65,21 +71,32 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/math/bit_logic.cpp
 
 )
+
 add_library(kernel_obj OBJECT ${KERNEL_SOURCES} ${ARCH_SOURCES})
 
-target_include_directories(kernel_obj PUBLIC
+add_library(libc_obj STATIC ${LIB_C_SOURCES})
+target_include_directories(libc_obj PUBLIC
+  ${CMAKE_SOURCE_DIR}/src/libc/include
+  ${CMAKE_SOURCE_DIR}/src
+)
+target_compile_options(libc_obj PRIVATE
+  -ffreestanding
+  -fno-builtin
+)
+
+target_include_directories(kernel_obj PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc
-    ${CMAKE_SOURCE_DIR}/src/kernel/k_libcxx
+    ${CMAKE_SOURCE_DIR}/src/libc/include
 )
 
 target_compile_options(kernel_obj PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:
+        --sysroot=${SYSROOT}
         -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/src/=/editOS/
         -ffreestanding
-        # -nostdinc++
         -fno-exceptions
         -fno-rtti
+        # -nostdinc++
         -O2
         -Wall
         -Wextra
@@ -92,13 +109,15 @@ target_compile_options(kernel_obj PRIVATE
 # Actual kernel binary: link the object library
 add_executable(kernel $<TARGET_OBJECTS:kernel_obj>)
 
-# We want the output file to be named kernel.elf
 set_target_properties(kernel PROPERTIES
     OUTPUT_NAME "kernel.elf"
 )
 
+target_link_libraries(kernel PRIVATE libc_obj)
+
 # Link options: 32-bit, no stdlib, custom linker script
 target_link_options(kernel PRIVATE
+    --sysroot=${SYSROOT}
     -nostdlib
     -lgcc
     -Wl,-T,${CMAKE_SOURCE_DIR}/linker.ld
@@ -139,5 +158,15 @@ add_custom_target(run
             -display gtk,zoom-to-fit=on
     DEPENDS iso
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+set(CMAKE_INSTALL_PREFIX "${SYSROOT}" CACHE PATH "Install prefix" FORCE)
+
+install(TARGETS libc_obj ARCHIVE
+  DESTINATION ${SYSROOT}/usr/lib
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/libc/include/
+  DESTINATION ${SYSROOT}/usr/include
 )
 
