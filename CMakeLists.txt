@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
+set( CMAKE_VERBOSE_MAKEFILE on )
 project(editOS LANGUAGES CXX ASM)
 
-# Freestanding 32-bit C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set(CMAKE_TOOLCHAIN_FILE=cmake/toolchain-x86_64-elf.cmake)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 enable_language(ASM)
+
+set(CMAKE_ASM_COMPILER   x86_64-elf-as)
+set(CMAKE_C_COMPILER   x86_64-elf-gcc)
+set(CMAKE_CXX_COMPILER x86_64-elf-g++)
 
 set(ARCH "x86" CACHE STRING "Target architecture (e.g. x86, x86_64)")
 
@@ -35,11 +41,12 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/kernel/abi/icxx/pure_virtual.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/abi/gcc/int_arithmetic.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/boot/multiboot2.cpp
-    ${CMAKE_SOURCE_DIR}/src/kernel/runtime/cstring.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/logging/logging.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/tty/tty.cpp
     ${CMAKE_SOURCE_DIR}/src/kernel/shell/shell.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc/string.cpp
+    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc/abort.cpp
     # ${CMAKE_SOURCE_DIR}/src/apps/editor/editor.cpp
 
     ${CMAKE_SOURCE_DIR}/src/gfx/canvas.cpp
@@ -58,33 +65,27 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/math/bit_logic.cpp
 
 )
-# Object library that builds all kernel sources
 add_library(kernel_obj OBJECT ${KERNEL_SOURCES} ${ARCH_SOURCES})
 
-# Allow #include "hw/console.hpp" etc.
 target_include_directories(kernel_obj PUBLIC
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/kernel/k_libc
+    ${CMAKE_SOURCE_DIR}/src/kernel/k_libcxx
 )
 
-# Per-language compile options (so we don't feed C++ flags to the assembler)
 target_compile_options(kernel_obj PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:
         -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/src/=/editOS/
-        -m32
         -ffreestanding
-        # -fno-threadsafe-statics
+        # -nostdinc++
         -fno-exceptions
         -fno-rtti
-        -fno-pic
-        -fno-pie
         -O2
-        # -g0
         -Wall
         -Wextra
         -std=c++20
     >
     $<$<COMPILE_LANGUAGE:ASM>:
-        -m32
     >
 )
 
@@ -98,9 +99,8 @@ set_target_properties(kernel PROPERTIES
 
 # Link options: 32-bit, no stdlib, custom linker script
 target_link_options(kernel PRIVATE
-    -m32
     -nostdlib
-    -no-pie
+    -lgcc
     -Wl,-T,${CMAKE_SOURCE_DIR}/linker.ld
     -Wl,-N
 )
