@@ -41,10 +41,7 @@ CT_MODULES=y
 #
 # CT_OBSOLETE is not set
 # CT_EXPERIMENTAL is not set
-CT_DEBUG_CT=y
-CT_DEBUG_PAUSE_STEPS=y
-# CT_DEBUG_CT_SAVE_STEPS is not set
-CT_DEBUG_INTERACTIVE=y
+# CT_DEBUG_CT is not set
 
 #
 # Paths
@@ -57,7 +54,8 @@ CT_BUILD_TOP_DIR="${CT_WORK_DIR:-${CT_TOP_DIR}/.build}/${CT_HOST:+HOST-${CT_HOST
 CT_BUILD_DIR="${CT_BUILD_TOP_DIR}/build"
 CT_PREFIX_DIR="${CT_TOP_DIR}/prefix"
 CT_RM_RF_PREFIX_DIR=y
-CT_REMOVE_DOCS=y
+# CT_REMOVE_DOCS is not set
+CT_BUILD_MANUALS=y
 # CT_INSTALL_LICENSES is not set
 # CT_PREFIX_DIR_RO is not set
 CT_STRIP_HOST_TOOLCHAIN_EXECUTABLES=y
@@ -121,7 +119,7 @@ CT_LOG_DEBUG=y
 CT_LOG_LEVEL_MAX="DEBUG"
 CT_LOG_SEE_TOOLS_WARN=y
 CT_LOG_TO_FILE=y
-CT_LOG_FILE_COMPRESS=y
+# CT_LOG_FILE_COMPRESS is not set
 # end of Paths and misc options
 
 #
@@ -366,7 +364,7 @@ CT_LIBC_NEWLIB_GLOBAL_ATEXIT=y
 # CT_LIBC_NEWLIB_LITE_EXIT is not set
 # CT_LIBC_NEWLIB_REENT_SMALL is not set
 CT_LIBC_NEWLIB_MULTITHREAD=y
-# CT_LIBC_NEWLIB_RETARGETABLE_LOCKING is not set
+CT_LIBC_NEWLIB_RETARGETABLE_LOCKING=y
 # CT_LIBC_NEWLIB_EXTRA_SECTIONS is not set
 CT_LIBC_NEWLIB_WIDE_ORIENT=y
 CT_LIBC_NEWLIB_ENABLE_TARGET_OPTSPACE=y
@@ -480,7 +478,7 @@ CT_CC_GCC_LIBSTDCXX=y
 CT_CC_GCC_LIBSTDCXX_HOSTED_DISABLE=y
 CT_CC_GCC_LIBSTDCXX_TARGET_CXXFLAGS=""
 # CT_CC_GCC_LIBMUDFLAP is not set
-# CT_CC_GCC_LIBSSP is not set
+CT_CC_GCC_LIBSSP=y
 # CT_CC_GCC_LIBQUADMATH is not set
 CT_CC_GCC_LIBMPX=y
 # CT_CC_GCC_LIBSTDCXX_VERBOSE is not set
@@ -526,60 +524,7 @@ CT_ALL_LINKER_CHOICES="MOLD"
 #
 # Debug facilities
 #
-CT_DEBUG_GDB=y
-CT_DEBUG_GDB_PKG_KSYM="GDB"
-CT_GDB_DIR_NAME="gdb"
-CT_GDB_PKG_NAME="gdb"
-CT_GDB_SRC_RELEASE=y
-# CT_GDB_SRC_DEVEL is not set
-CT_GDB_PATCH_ORDER="global"
-CT_GDB_V_16=y
-# CT_GDB_V_15 is not set
-# CT_GDB_V_14 is not set
-# CT_GDB_V_13 is not set
-# CT_GDB_V_12 is not set
-# CT_GDB_V_11 is not set
-# CT_GDB_V_10 is not set
-# CT_GDB_V_9 is not set
-# CT_GDB_V_8_3 is not set
-CT_GDB_VERSION="16.3"
-CT_GDB_MIRRORS="$(CT_Mirrors GNU gdb) $(CT_Mirrors sourceware gdb/releases)"
-CT_GDB_ARCHIVE_FILENAME="@{pkg_name}-@{version}"
-CT_GDB_ARCHIVE_DIRNAME="@{pkg_name}-@{version}"
-CT_GDB_ARCHIVE_FORMATS=".tar.xz .tar.gz"
-CT_GDB_SIGNATURE_FORMAT=""
-CT_GDB_later_than_16=y
-CT_GDB_16_or_later=y
-CT_GDB_later_than_15=y
-CT_GDB_15_or_later=y
-CT_GDB_later_than_14=y
-CT_GDB_14_or_later=y
-CT_GDB_later_than_13=y
-CT_GDB_13_or_later=y
-CT_GDB_later_than_12=y
-CT_GDB_12_or_later=y
-CT_GDB_later_than_11=y
-CT_GDB_11_or_later=y
-CT_GDB_later_than_10=y
-CT_GDB_10_or_later=y
-CT_GDB_later_than_8_3=y
-CT_GDB_8_3_or_later=y
-CT_GDB_CROSS=y
-# CT_GDB_CROSS_STATIC is not set
-# CT_GDB_CROSS_SIM is not set
-CT_GDB_CROSS_PYTHON=y
-CT_GDB_CROSS_PYTHON_BINARY=""
-CT_GDB_CROSS_EXTRA_CONFIG_ARRAY=""
-
-#
-# In bare-metal, you'll need to   
-#
-
-#
-# provide your own gdbserver stub.
-#
-CT_GDB_GDBSERVER_TOPLEVEL=y
-CT_GDB_CC_LD_LIBTOOL=y
+# CT_DEBUG_GDB is not set
 # CT_DEBUG_STRACE is not set
 CT_ALL_DEBUG_CHOICES="DUMA GDB LTRACE STRACE"
 # end of Debug facilities
@@ -749,16 +694,12 @@ CT_GMP_NEEDED=y
 CT_MPFR_NEEDED=y
 CT_ISL_NEEDED=y
 CT_MPC_NEEDED=y
-CT_EXPAT_NEEDED=y
-CT_NCURSES_NEEDED=y
 CT_ZLIB_NEEDED=y
 CT_ZSTD_NEEDED=y
 CT_GMP=y
 CT_MPFR=y
 CT_ISL=y
 CT_MPC=y
-CT_EXPAT=y
-CT_NCURSES=y
 CT_ZLIB=y
 CT_ZSTD=y
 # end of Companion libraries
