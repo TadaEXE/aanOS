@@ -1,6 +1,6 @@
 #pragma once
 
-#include "arch/x86/io/ports.hpp"
+#include "arch/x86/common/io/ports.hpp"
 #include "hal/keyboard.hpp"
 
 namespace x86::input {

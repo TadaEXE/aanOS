@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-#include "arch/x86/io/ports.hpp"
+#include "arch/x86/common/io/ports.hpp"
 #include "hal/serial.hpp"
 
 namespace x86::io {

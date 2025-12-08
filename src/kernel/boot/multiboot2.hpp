@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "kernel/boot/boot_context.hpp"
 #include "kernel/containers/flatmap.hpp"
 
 namespace mb2 {

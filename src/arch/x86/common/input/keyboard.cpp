@@ -1,4 +1,4 @@
-#include "arch/x86/input/keyboard.hpp"
+#include "arch/x86/common/input/keyboard.hpp"
 
 #include "hal/keyboard.hpp"
 

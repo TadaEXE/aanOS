@@ -6,34 +6,25 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 enable_language(ASM)
 
-set(TOOLCHAIN_DIR ${CMAKE_SOURCE_DIR}/cross-compiler-setup/toolchain/bin)
-set(CMAKE_ASM_COMPILER ${TOOLCHAIN_DIR}/x86_64-elf-as)
-set(CMAKE_C_COMPILER   ${TOOLCHAIN_DIR}/x86_64-elf-gcc)
-set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/x86_64-elf-g++)
+set(ARCH_FAMILY "x86" CACHE STRING "Target architecture (e.g. x86, x86_64)")
+set(ARCH_VARIANT "i386" CACHE STRING "")
+set(TARGET_TRIPLET "i386-elf" CACHE STRING "")
+set(QEMU_SYSTEM "qemu-system-i386" CACHE STRING "QEMU system binary")
 
-set(ARCH "x86" CACHE STRING "Target architecture (e.g. x86, x86_64)")
+include("src/arch/arch.cmake")
+
+set(TOOLCHAIN_DIR ${CMAKE_SOURCE_DIR}/cross-compiler/${TARGET_TRIPLET}-toolchain/bin)
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_DIR}/${TARGET_TRIPLET}-as)
+set(CMAKE_C_COMPILER   ${TOOLCHAIN_DIR}/${TARGET_TRIPLET}-gcc)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/${TARGET_TRIPLET}-g++)
 
 set(LIB_C_SOURCES
     ${CMAKE_SOURCE_DIR}/src/libc/src/stdlib.cpp
     ${CMAKE_SOURCE_DIR}/src/libc/src/stdio.cpp
     ${CMAKE_SOURCE_DIR}/src/libc/src/string.cpp
-)
-
-set(ARCH_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/boot/boot.s
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/boot/entry_point.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/system/system.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/graphics/framebuffer.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/input/keyboard.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/arch/${ARCH}/io/serial.cpp
 )
 
 set(KERNEL_SOURCES
@@ -88,11 +79,9 @@ target_include_directories(kernel_obj PRIVATE
 target_compile_options(kernel_obj PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:
         -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/src/=/editOS/
-        # -march=i386
         -ffreestanding
         -fno-exceptions
         -fno-rtti
-        # -nostdinc++
         -O2
         -Wall
         -Wextra
@@ -102,7 +91,6 @@ target_compile_options(kernel_obj PRIVATE
     >
 )
 
-# Actual kernel binary: link the object library
 add_executable(kernel $<TARGET_OBJECTS:kernel_obj>)
 
 set_target_properties(kernel PROPERTIES
@@ -112,7 +100,6 @@ set_target_properties(kernel PROPERTIES
 target_link_libraries(kernel PRIVATE libc_obj)
 
 target_link_options(kernel PRIVATE
-    --sysroot=${SYSROOT}
     -nostdlib
     -lgcc
     -Wl,-T,${CMAKE_SOURCE_DIR}/linker.ld
@@ -146,7 +133,7 @@ add_custom_target(analyze
 add_custom_target(iso ALL DEPENDS ${ISO_FILE})
 
 add_custom_target(run
-    COMMAND qemu-system-x86_64
+    COMMAND qemu-system-${QEMU-SYSTEM}
             -cdrom ${ISO_FILE}
             -chardev vc,id=serialgui,logfile=serial.log,logappend=on
             -serial chardev:serialgui
@@ -154,14 +141,3 @@ add_custom_target(run
     DEPENDS iso
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-
-set(CMAKE_INSTALL_PREFIX "${SYSROOT}" CACHE PATH "Install prefix" FORCE)
-
-install(TARGETS libc_obj ARCHIVE
-  DESTINATION ${SYSROOT}/usr/lib
-)
-
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/libc/include/
-  DESTINATION ${SYSROOT}/usr/include
-)
-

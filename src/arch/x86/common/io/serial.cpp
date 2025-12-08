@@ -1,4 +1,4 @@
-#include "arch/x86/io/serial.hpp"
+#include "arch/x86/common/io/serial.hpp"
 
 #include "hal/serial.hpp"
 

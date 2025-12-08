@@ -1,8 +1,8 @@
 #include <cstdint>
 #include <iterator>
 
-#include "arch/x86/graphics/framebuffer.hpp"
-#include "arch/x86/io/serial.hpp"
+#include "arch/x86/common/graphics/framebuffer.hpp"
+#include "arch/x86/common/io/serial.hpp"
 #include "hal/boot.hpp"
 #include "kernel/boot/boot_context.hpp"
 #include "kernel/log.hpp"

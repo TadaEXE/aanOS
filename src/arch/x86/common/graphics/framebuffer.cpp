@@ -1,4 +1,4 @@
-#include "arch/x86/graphics/framebuffer.hpp"
+#include "arch/x86/common/graphics/framebuffer.hpp"
 
 #include "gfx/color.hpp"
 

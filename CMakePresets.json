@@ -5,33 +5,48 @@
     "minor": 23,
     "patch": 0
   },
+  
   "configurePresets": [
     {
-      "name": "default",
-      "displayName": "Default configure",
+      "name": "base",
+      "displayName": "Base settings",
+      "hidden": true,
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
+    },
+
+    {
+      "name": "x86-i386",
+      "displayName": "x86 / i386 (Debug)",
+      "inherits": "base",
+      "binaryDir": "${sourceDir}/build-x86-i386",
+      "cacheVariables": {
+        "ARCH_FAMILY": "x86",
+        "ARCH_VARIANT": "i386",
+        "TARGET_TRIPLET": "i386-elf",
+        "QEMU-SYSTEM": "i386"
+      }
     }
   ],
   "buildPresets": [
     {
-      "name": "build",
-      "displayName": "Build kernel + ISO",
-      "configurePreset": "default"
+      "name": "x86-i386-build",
+      "displayName": "Build kernel + ISO (x86/i386)",
+      "configurePreset": "x86-i386"
     },
     {
-      "name": "build-and-run",
-      "displayName": "Build and run in QEMU",
-      "configurePreset": "default",
+      "name": "x86-i386-build-and-run",
+      "displayName": "Build and run in QEMU (x86/i386)",
+      "configurePreset": "x86-i386",
       "targets": [ "run" ]
     },
     {
-      "name": "build-and-analyze",
-      "displayName": "Build and run elf-size-analyze",
-      "configurePreset": "default",
+      "name": "x86-i386-build-and-analyze",
+      "displayName": "Build and run elf-size-analyze (x86/i386)",
+      "configurePreset": "x86-i386",
       "targets": [ "analyze" ]
     }
   ]

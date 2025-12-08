@@ -1,0 +1,5 @@
+if(ARCH_FAMILY STREQUAL "x86")
+    include("${CMAKE_CURRENT_LIST_DIR}/x86/x86.cmake")
+else()
+    message(FATAL_ERROR "Unsupported ARCH_FAMILY='${ARCH_FAMILY}'")
+endif()
