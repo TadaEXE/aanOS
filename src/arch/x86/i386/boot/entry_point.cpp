@@ -2,8 +2,8 @@
 #include <iterator>
 
 #include "arch/x86/common/graphics/framebuffer.hpp"
-#include "arch/x86/common/io/serial.hpp"
 #include "hal/boot.hpp"
+#include "hal/serial.hpp"
 #include "kernel/boot/boot_context.hpp"
 #include "kernel/log.hpp"
 #include "kernel/memory/builtin/bm_heap.hpp"
@@ -91,7 +91,7 @@ extern "C" void kmain(uint32_t mb2_info_addr) {
   boot::BootContext ctx{};
   ctx.arch = boot::ArchKind::X86;
   ctx.bootloader = boot::BootLoaderKind::Multiboot2;
-  ctx.system_serial_bus = &io::get_serial0();
+  ctx.system_serial_bus = hal::SerialBus::get(hal::SerialPort::SYSTEM_RESERVED);
 
   // preload all tags:
   auto& map = mb2::get_tag_map(mb2_info_addr);

@@ -8,7 +8,7 @@ namespace hal {
 
 [[noreturn]] void enter_kernel(boot::BootContext& ctx);
 
-std::optional<Framebuffer> get_boot_framebuffer();
+std::optional<IFramebuffer> get_boot_framebuffer();
 
 class BootFramebuffer {
  public:
@@ -24,14 +24,14 @@ class BootFramebuffer {
 
   bool available() { return boot_fb != nullptr; }
 
-  Framebuffer* get() { return boot_fb; }
+  IFramebuffer* get() { return boot_fb; }
 
-  void set(Framebuffer* fb) { boot_fb = fb; }
+  void set(IFramebuffer* fb) { boot_fb = fb; }
 
  private:
   BootFramebuffer() {}
 
-  Framebuffer* boot_fb;
+  IFramebuffer* boot_fb;
 };
 
 }  // namespace hal

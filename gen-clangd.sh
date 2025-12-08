@@ -36,7 +36,7 @@ CPU="cortex-m0plus"
 FLOAT_ABI="soft"
 
 print_help() {
-  sed -n '1,120p' "$0"
+  sed -n '4,25p' "$0"
 }
 
 # ---- parse args -------------------------------------------------------------
@@ -70,7 +70,9 @@ fi
 
 command -v "$compiler" >/dev/null 2>&1 || { echo "error: compiler '$compiler' not found in PATH" >&2; exit 1; }
 
-echo ">> Toolchain: $toolchain"
+if [[ $user_set_compiler -eq 0 ]]; then
+  echo ">> Toolchain: $toolchain"
+fi
 echo ">> Compiler : $compiler"
 echo ">> Std      : $std"
 echo ">> Outfile  : $out"
@@ -115,10 +117,14 @@ for p in "${uniq_paths[@]}"; do
   yaml_includes+=("\"-isystem\" \"$p\"")
 done
 
-# Backup if overwriting
-if [[ "$out" == ".clangd" && -f .clangd ]]; then
-  cp -f .clangd .clangd.bak
-  echo ">> Backed up existing .clangd -> .clangd.bak"
+# ---- extract KEEP section, if any ------------------------------------------
+keep_block=""
+if [[ -f "$out" ]]; then
+  keep_block="$(awk '/^#!KEEP/{keep=1} keep{print}' "$out")"
+
+  # Backup if overwriting
+  cp -f "$out" "$out".bak
+  echo ">> Backed up existing $out -> $out.bak"
 fi
 
 # ---- write the .clangd ------------------------------------------------------
@@ -143,6 +149,12 @@ fi
   done
   echo "  ]"
   echo ""
+
+  if [[ -n "$keep_block" ]]; then
+    printf "%s\n" "$keep_block"
+  else
+    printf "#!KEEP <- Everything after this line will be persisted when regenerating the file"
+  fi
 } > "$out"
 
 echo ">> Wrote $out with ${#uniq_paths[@]} include dirs"

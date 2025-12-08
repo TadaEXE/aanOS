@@ -1,32 +1,45 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# These might be set to something, which might disrupt the build.
+# So we just remove them for the duration of this script.
 TMP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-unset LD_LIBRARY_PATH
 TMP_CFLAGS=$CFLAGS
-unset CFLAGS
 TMP_CXXFLAGS=$CXXFLAGS
+unset LD_LIBRARY_PATH
+unset CFLAGS
 unset CXXFLAGS
 
-# Versions (can be overridden via env)
+# Args can be changed via cmd args or env
 CROSS_TC_BINUTILS_VER=${CROSS_TC_BINUTILS_VER:-2.45.1}
 CROSS_TC_GCC_VER=${CROSS_TC_GCC_VER:-15.2.0}
 CROSS_TC_GMP_VER=${CROSS_TC_GMP_VER:-6.3.0}
 CROSS_TC_MPFR_VER=${CROSS_TC_MPFR_VER:-4.2.2}
 CROSS_TC_MPC_VER=${CROSS_TC_MPC_VER:-1.3.1}
-
-# Target and install prefix
-CROSS_TC_ROOT=$PWD/cross-compiler
+CROSS_TC_ROOT=${CROSS_TC_ROOT:-$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/cross-compiler}
 CROSS_TC_TARGET=${CROSS_TC_TARGET:-x86_64-elf}
-CROSS_TC_PREFIX=${CROSS_TC_PREFIX:-${CROSS_TC_ROOT}/${CROSS_TC_TARGET}-toolchain}
-
-# Where the tarballs from ftp.gnu.org live
-CROSS_TC_SRC_ROOT=${CROSS_TC_SRC_ROOT:-"${CROSS_TC_ROOT}/.download"}
-
-# Where to put build directories
-CROSS_TC_BUILD_ROOT=${CROSS_TC_BUILD_ROOT:-"${CROSS_TC_ROOT}/.build"}
-
 CROSS_TC_JOBS=${CROSS_TC_JOBS:-$(($(command -v nproc >/dev/null 2>&1 && nproc || echo 1)/2))}
+
+# ---- parse args -------------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --root) CROSS_TC_ROOT="$2"; shift 2 ;;
+    --target) CROSS_TC_TARGET="$2"; shift 2 ;;
+    --jobs) CROSS_TC_JOBS="$2"; shift 2 ;;
+
+    --binutils-ver) CROSS_TC_BINUTILS_VER="$2"; shift 2 ;;
+    --gcc-ver) CROSS_TC_GCC_VER="$2"; shift 2 ;;
+    --gmp-ver) CROSS_TC_GMP_VER="$2"; shift 2 ;;
+    --mpfr-ver) CROSS_TC_MPFR_VER="$2"; shift 2 ;;
+    --mpc-ver) CROSS_TC_MPC_VER="$2"; shift 2 ;;
+
+    *) echo "Unknown arg: $1" >&2; exit 1 ;;
+  esac
+done
+
+CROSS_TC_PREFIX=${CROSS_TC_PREFIX:-${CROSS_TC_ROOT}/${CROSS_TC_TARGET}-toolchain}
+CROSS_TC_SRC_ROOT=${CROSS_TC_SRC_ROOT:-"${CROSS_TC_ROOT}/.download"}
+CROSS_TC_BUILD_ROOT=${CROSS_TC_BUILD_ROOT:-"${CROSS_TC_ROOT}/.build"}
 
 require_tarball() {
   local f="$1"

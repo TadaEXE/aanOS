@@ -51,8 +51,6 @@ set(KERNEL_SOURCES
     ${CMAKE_SOURCE_DIR}/src/ui/core/text_area.cpp
     ${CMAKE_SOURCE_DIR}/src/ui/tty/tty_text_area.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/hal/keyboard.cpp
-
     ${CMAKE_SOURCE_DIR}/src/input/keymap_us.cpp
 
     ${CMAKE_SOURCE_DIR}/src/math/bit_logic.cpp

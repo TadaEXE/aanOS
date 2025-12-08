@@ -9,7 +9,7 @@
 
 namespace x86::graphics {
 
-class Framebuffer : public hal::Framebuffer {
+class Framebuffer : public hal::IFramebuffer {
  public:
   Framebuffer() = default;
 

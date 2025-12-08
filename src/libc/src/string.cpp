@@ -1,7 +1,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <string.h>
-#include <cstring>
 
 extern "C" void* memset(void* dest, int ch, size_t count) {
   auto* p = static_cast<uint8_t*>(dest);

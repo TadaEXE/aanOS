@@ -62,13 +62,13 @@ logging::backend::LoggingSink* setup_logging(boot::BootContext& ctx) {
     log_msg("Kernel heap (%d MiB) initialized at %p", 32, ctx.ram_start_addr);
   }
 
-  hal::Framebuffer* fb = ctx.boot_framebuffer;
+  hal::IFramebuffer* fb = ctx.boot_framebuffer;
   if (!fb) { panic("No framebuffer provided by bootloader. Abort!"); }
 
   gfx::Canvas can(*fb);
   can.clear(0xFF202040);
 
-  auto& kb = hal::keyboard();
+  auto& kb = hal::Keyboard::get();
   gfx::Rect tty_rect{0, 0, can.width(), can.height()};
   tty_rect -= 10;
 

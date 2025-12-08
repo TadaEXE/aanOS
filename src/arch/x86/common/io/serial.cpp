@@ -56,21 +56,17 @@ void SerialBus::write_raw(char c) noexcept {
   data.out(static_cast<uint8_t>(c));
 }
 
-SerialBus& get_serial0() noexcept {
-  static SerialBus serial0(hal::SerialPort::SERIAL_0);
-  return serial0;
-}
-
 }  // namespace x86::io
 
 namespace hal {
 
-SerialBus* get_serial_bus(SerialPort port) noexcept {
+SerialBus* SerialBus::get(SerialPort port) noexcept {
 
   switch (port) {
 
     case hal::SerialPort::SYSTEM_RESERVED:
-      return &x86::io::get_serial0();
+      static x86::io::SerialBus serial0(hal::SerialPort::SERIAL_0);
+      return &serial0;
 
     default:
       return nullptr;

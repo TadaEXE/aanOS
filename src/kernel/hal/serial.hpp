@@ -17,7 +17,7 @@ class SerialBus {
   virtual void write_char(char c) noexcept = 0;
   virtual void write_string(const char* s) noexcept = 0;
   virtual void write_hex32(uint32_t h) noexcept = 0;
+  static SerialBus* get(SerialPort port) noexcept;
 };
 
-SerialBus* get_serial_bus(SerialPort port) noexcept;
 }  // namespace hal

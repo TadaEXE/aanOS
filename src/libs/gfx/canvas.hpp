@@ -14,7 +14,7 @@ class Canvas {
   Canvas& operator=(const Canvas&) = delete;
   Canvas& operator=(Canvas&&) = delete;
 
-  explicit Canvas(hal::Framebuffer& fb) : fb(fb) {}
+  explicit Canvas(hal::IFramebuffer& fb) : fb(fb) {}
 
   uint32_t width() const noexcept { return fb.get_width(); }
 
@@ -30,6 +30,6 @@ class Canvas {
   void draw_border(Rect rect, int16_t thickness, Color color) noexcept;
 
  private:
-  hal::Framebuffer& fb;
+  hal::IFramebuffer& fb;
 };
 }  // namespace gfx

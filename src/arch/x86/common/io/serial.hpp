@@ -52,6 +52,4 @@ class SerialBus final : public hal::SerialBus {
   Port8 line_status;
 };
 
-SerialBus& get_serial0() noexcept;
-
 }  // namespace x86::io
