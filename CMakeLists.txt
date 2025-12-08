@@ -1,3 +1,4 @@
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/ct-ng-toolchain/prefix/toolchain.cmake)
 cmake_minimum_required(VERSION 3.16)
 set( CMAKE_VERBOSE_MAKEFILE on )
 project(editOS LANGUAGES CXX ASM)
@@ -6,14 +7,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_SYSTEM_PROCESSOR x86_64)
+# set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
-enable_language(ASM)
+# enable_language(ASM)
 
-set(CMAKE_ASM_COMPILER  x86_64-elf-as)
-set(CMAKE_C_COMPILER   x86_64-elf-gcc)
-set(CMAKE_CXX_COMPILER x86_64-elf-g++)
-
+# set(CMAKE_ASM_COMPILER  x86_64-elf-as)
+# set(CMAKE_C_COMPILER   x86_64-elf-gcc)
+# set(CMAKE_CXX_COMPILER x86_64-elf-g++)
+#
 set(SYSROOT
   "${CMAKE_SOURCE_DIR}/sysroot"
   CACHE PATH "Sysroot used for cross builds"
@@ -22,9 +23,10 @@ set(SYSROOT
 set(ARCH "x86" CACHE STRING "Target architecture (e.g. x86, x86_64)")
 
 set(LIB_C_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/libc/src/abort.cpp
-    ${CMAKE_SOURCE_DIR}/src/libc/src/stdio.cpp
-    ${CMAKE_SOURCE_DIR}/src/libc/src/string.cpp
+    ${CMAKE_SOURCE_DIR}/src/libc/src/placeholder.cpp
+    # ${CMAKE_SOURCE_DIR}/src/libc/src/stdlib.cpp
+    # ${CMAKE_SOURCE_DIR}/src/libc/src/stdio.cpp
+    # ${CMAKE_SOURCE_DIR}/src/libc/src/string.cpp
 )
 
 set(ARCH_SOURCES
@@ -77,6 +79,7 @@ add_library(kernel_obj OBJECT ${KERNEL_SOURCES} ${ARCH_SOURCES})
 add_library(libc_obj STATIC ${LIB_C_SOURCES})
 target_include_directories(libc_obj PUBLIC
   ${CMAKE_SOURCE_DIR}/src/libc/include
+  ${CMAKE_SOURCE_DIR}/src/libc/
   ${CMAKE_SOURCE_DIR}/src
 )
 target_compile_options(libc_obj PRIVATE
@@ -86,6 +89,7 @@ target_compile_options(libc_obj PRIVATE
 
 target_include_directories(kernel_obj PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/libc/include
     ${CMAKE_SOURCE_DIR}/src/libc/include
 )
 
@@ -163,10 +167,14 @@ add_custom_target(run
 set(CMAKE_INSTALL_PREFIX "${SYSROOT}" CACHE PATH "Install prefix" FORCE)
 
 install(TARGETS libc_obj ARCHIVE
-  DESTINATION ${SYSROOT}/usr/lib
+  DESTINATION ${CMAKE_FIND_ROOT_PATH}/usr/lib
 )
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/libc/include/
-  DESTINATION ${SYSROOT}/usr/include
+  DESTINATION ${CMAKE_FIND_ROOT_PATH}/usr/include
+)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/libc/misc/
+  DESTINATION ${CMAKE_FIND_ROOT_PATH}/usr/misc
 )
 
