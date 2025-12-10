@@ -1,82 +1,101 @@
 #include "gfx/canvas.hpp"
 
 #include <cstdint>
+#include <cstring>
 
+#include <kernel/log.hpp>
+
+#include "color.hpp"
 #include "gfx/shapes.hpp"
+#include "hal/framebuffer.hpp"
 
 namespace gfx {
 
-void Canvas::draw_pixel(uint32_t x, uint32_t y, Color color) noexcept {
-  fb.put_pixel(x, y, color);
+constexpr void expand(uint32_t out[8], uint8_t b, Color c, Color c2 = Color::None()) {
+  for (auto i = 0; i < 8; ++i) {
+    out[i] = (b & (0b10000000 >> i)) == 0 ? static_cast<uint32_t>(c2)
+                                          : static_cast<uint32_t>(c);
+  }
+}
+
+void Canvas::clear(Color color) noexcept {
+  draw_rect(fb_rect, color);
+}
+
+void Canvas::clear(Color color, Rect rect) noexcept {
+  draw_rect(rect, color);
+}
+
+void Canvas::draw_pixel(uint32_t x, uint32_t y, Color c) noexcept {
+  auto* pixel = get32(x, y);
+  *pixel = static_cast<uint32_t>(c);
+}
+
+void Canvas::draw_byte(uint32_t x, uint32_t y, uint8_t b, Color c, Color nc) noexcept {
+  uint32_t buf[8];
+  expand(buf, b, c, nc);
+  auto* pixel = get32(x, y);
+  fitcpy(pixel, buf, 8);
+}
+
+void Canvas::draw_buffer(uint32_t x, uint32_t y, uint8_t* b, size_t l, Color c,
+                         Color nc) noexcept {
+  if (!b) return;
+
+  auto* pixel = get32(x, y);
+  if (reinterpret_cast<uint8_t*>(pixel) + (l * 4) >= fb.end()) return;
+
+  uint32_t buf[8];
+
+  for (size_t i = 0; i < l; ++i) {
+    expand(buf, b[i], c, nc);
+    fitcpy(pixel, buf, 8);
+    pixel += 8;
+  }
 }
 
 void Canvas::draw_rect(Rect rect, Color color) noexcept {
-  const auto xmax = rect.x + rect.w;
-  const auto ymax = rect.y + rect.h;
+  const auto ymax = rect.end_y();
   for (uint32_t y = rect.y; y < ymax; ++y) {
-    for (uint32_t x = rect.x; x < xmax; ++x) {
-      fb.put_pixel(x, y, color);
-    }
+    auto* pixel = get32(rect.x, y);
+    fitset(pixel, static_cast<uint32_t>(color), rect.w);
   }
 }
 
-void Canvas::draw_border(Rect o, Rect i, Color color) noexcept {
-  const auto xmax = o.x + o.w;
-  const auto ymax = o.y + o.h;
+uint8_t* Canvas::get(size_t x, size_t y) {
+  return fb.begin() + y * fb.get_pitch() + x * bytes_pre_pixle;
+}
 
-  for (uint32_t y = o.y; y < ymax; ++y) {
-    for (uint32_t x = o.x; x < xmax; ++x) {
-      if (i.is_inbounds(x, y)) continue;
-      fb.put_pixel(x, y, color);
-    }
+uint32_t* Canvas::get32(size_t x, size_t y) {
+  return reinterpret_cast<uint32_t*>(fb.begin() + y * fb.get_pitch()) + x;
+}
+
+void Canvas::fitcpy(uint32_t* dest, const uint32_t* src, size_t len) {
+  if (!dest || !src) return;
+  for (size_t i = 0; i < len; ++i) {
+    if (src[i] == Color::None()) continue;
+
+    dest[i] = src[i];
   }
 }
 
-void Canvas::draw_border(Rect r, int16_t thickness, Color color) noexcept {
-  Rect r2 = r + thickness;
-
-  if (thickness > 0) {
-    draw_border(r2, r, color);
+void Canvas::fitcpy(uint8_t* dest, const uint8_t* src, size_t len) {
+  if (!dest || !src) return;
+  if (len % 4 == 0) {
+    fitcpy(reinterpret_cast<uint32_t*>(dest), reinterpret_cast<const uint32_t*>(src),
+           len / 4);
   } else {
-    draw_border(r, r2, color);
+    for (size_t i = 0; i < len; ++i) {
+      if (src[i] == Color::None()) continue;
+      dest[i] = src[i];
+    }
   }
 }
 
-// void Canvas::draw_char(uint32_t x, uint32_t y, char c,
-//                        const text::Style& style) noexcept {
-//   const uint8_t* glyph = text::font5x7_glyph_for(c);
-//
-//   for (uint8_t row = 0; row < text::FONT5X7_HEIGHT; ++row) {
-//     uint8_t bits = glyph[row];
-//
-//     for (uint8_t col = 0; col < text::FONT5X7_WIDTH; ++col) {
-//       bool on = (bits >> (text::FONT5X7_WIDTH - 1 - col)) & 0x1u;
-//
-//       if (on) {
-//         draw_pixel(x + col, y + row, style.text_color);
-//       } else if (style.draw_bg) {
-//         draw_pixel(x + col, y + row, style.bg_color);
-//       }
-//     }
-//   }
-// }
-//
-// void Canvas::draw_text(uint32_t x, uint32_t y, const char* text,
-//                        const text::Style& style) noexcept {
-//   uint32_t cx = x;
-//   uint32_t cy = y;
-//
-//   while (*text) {
-//     char c = *text++;
-//
-//     if (c == '\n') {
-//       cx = x;
-//       cy += text::char_height();
-//       continue;
-//     }
-//
-//     draw_char(cx, cy, c, style);
-//     cx += text::char_width();
-//   }
-// }
+void Canvas::fitset(uint32_t* dest, uint32_t val, size_t len) {
+  for (size_t i = 0; i < len; ++i) {
+    dest[i] = val;
+  }
+}
+
 }  // namespace gfx

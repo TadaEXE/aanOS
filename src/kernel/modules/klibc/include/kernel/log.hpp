@@ -12,5 +12,6 @@
 ///   %x - hex
 ///   %p - ptr
 ///   %o - loggable obj
+///   TODO: Rework these to variadic temptlates
 void log_msg(const char* fmt, ...);
 void log_msg(const char* fmt, va_list args);

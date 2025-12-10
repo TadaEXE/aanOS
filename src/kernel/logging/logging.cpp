@@ -126,7 +126,12 @@ void vmsg_impl(bool auto_new_line, const char* fmt, va_list args) noexcept {
         print_uint(static_cast<uint64_t>(v), 16, true);
         break;
       }
-
+      case 'b': {
+        unsigned int v = va_arg(args, unsigned int);
+        backend_put_cstr("0b");
+        print_uint(static_cast<uint64_t>(v), 2, true);
+        break;
+      }
       case 'p': {
         void* ptr = va_arg(args, void*);
         if (ptr) {

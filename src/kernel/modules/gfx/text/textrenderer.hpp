@@ -39,13 +39,15 @@ class TextRenderer {
 
   void set_style(Style style) { this->style = style; }
 
+  void clear() { canvas.clear(style.bg); }
+
   const BitmapFont& font;
 
  private:
   Canvas& canvas;
   Style style;
-  uint32_t last_x{0};
-  uint32_t last_y{0};
+  uint32_t last_x{10};
+  uint32_t last_y{10};
 };
 
 }  // namespace gfx::text

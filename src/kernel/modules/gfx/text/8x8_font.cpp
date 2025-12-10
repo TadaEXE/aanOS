@@ -1,6 +1,6 @@
-#include "gfx/text/bitmap_font.hpp"
-
 #include <cstdint>
+
+#include "gfx/text/bitmap_font.hpp"
 
 namespace gfx::text {
 
@@ -111,13 +111,4 @@ static constexpr uint8_t FONT_DATA[] = {
 };
 
 }  // namespace builtin
-
-const BitmapFont& builtin_font() noexcept {
-  static const BitmapFont font{
-      builtin::GLYPH_W,   builtin::GLYPH_H,   builtin::FIRST_CHAR,
-      builtin::LAST_CHAR, builtin::FONT_DATA,
-  };
-  return font;
-}
-
 }  // namespace gfx::text

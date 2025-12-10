@@ -2,6 +2,18 @@
 
 namespace gfx {
 
+Point& Point::operator+=(Point p) {
+  x += p.x;
+  y += p.y;
+  return *this;
+}
+
+Point& Point::operator-=(Point p) {
+  x -= p.x;
+  y -= p.y;
+  return *this;
+}
+
 Point operator-(Point a, Point b) {
   a.x -= b.x;
   a.y -= b.y;

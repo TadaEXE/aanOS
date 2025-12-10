@@ -17,7 +17,10 @@ struct Color {
 
   // From ARGB 0xAARRGGBB
   constexpr Color(uint32_t argb)
-      : r((argb >> 16) & 0xFF), g((argb >> 8) & 0xFF), b((argb >> 0) & 0xFF), a((argb >> 24) & 0xFF) {}
+      : r((argb >> 16) & 0xFF),
+        g((argb >> 8) & 0xFF),
+        b((argb >> 0) & 0xFF),
+        a((argb >> 24) & 0xFF) {}
 
   // Implicit conversion to 0xAARRGGBB
   constexpr operator uint32_t() const {
@@ -40,7 +43,7 @@ struct Color {
 
   static constexpr Color Cyan() { return Color(0, 255, 255, 255); }
 
-  static constexpr Color Transparent() { return Color(0, 0, 0, 0); }
+  static constexpr Color None() { return Color(0, 0, 0, 0); }
 
   static constexpr Color Gray(uint8_t v = 128) { return Color(v, v, v, 255); }
 };

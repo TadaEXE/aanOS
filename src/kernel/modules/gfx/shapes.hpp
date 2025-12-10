@@ -23,6 +23,8 @@ struct Point : public logging::Loggable {
 
   Point& operator-=(int32_t t);
   Point& operator+=(int32_t t);
+  Point& operator+=(Point p);
+  Point& operator-=(Point p);
 
   void log_self() const noexcept override { log_obj<Point>(x, y); }
 };
@@ -58,6 +60,8 @@ struct Rect : public logging::Loggable {
 
   constexpr Rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
       : x(x), y(y), w(w), h(h) {}
+
+  Rect(Point a, Point b) : x(a.x), y(a.y), w(b.x), h(b.y) {}
 
   uint32_t end_x() const { return x + w; }
 

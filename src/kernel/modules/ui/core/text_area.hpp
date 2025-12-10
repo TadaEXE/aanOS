@@ -4,7 +4,7 @@
 #include "containers/gap_buffer.hpp"
 #include "gfx/canvas.hpp"
 #include "gfx/shapes.hpp"
-#include "gfx/text/text.hpp"
+#include "gfx/text/textrenderer.hpp"
 
 namespace ui {
 class TextArea {
@@ -14,8 +14,8 @@ class TextArea {
   TextArea& operator=(const TextArea&) = delete;
   TextArea& operator=(TextArea&&) = delete;
 
-  TextArea(gfx::Rect area, gfx::Canvas& canvas, gfx::text::Style style)
-      : area(area), canvas(canvas), tr(canvas, style), style(style) {}
+  TextArea(gfx::Rect area, gfx::text::TextRenderer& tr, gfx::text::Style style)
+      : area(area), /*canvas(canvas),*/ tr(tr), style(style) {}
 
   void put_char(char c) noexcept;
   void put_text(const char* text) noexcept;
@@ -49,8 +49,8 @@ class TextArea {
   size_t max_line_length() const noexcept;
 
   gfx::Rect area;
-  gfx::Canvas& canvas;
-  gfx::text::TextRenderer tr;
+  // gfx::Canvas& canvas;
+  gfx::text::TextRenderer& tr;
   gfx::text::Style style;
 
   gfx::Point real_cursor{0, 0};

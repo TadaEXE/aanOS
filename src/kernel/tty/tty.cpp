@@ -4,7 +4,6 @@
 
 #include "hal/keyboard.hpp"
 #include "input/keymap.hpp"
-#include "containers/string.hpp"
 
 namespace tty {
 
@@ -79,10 +78,10 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
           if (raw_mode) display.move_down(1);
           break;
         case Key::PageUp:
-          display.scroll_up(1);
+          display.scroll_down(1);
           break;
         case Key::PageDown:
-          display.scroll_down(1);
+          display.scroll_up(1);
           break;
         case Key::End: {
           if (ev.has_mod(hal::KeyMod::Ctrl)) {
@@ -99,7 +98,7 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
       continue;
     } else if (c == '\n' || c == '\r') {
       display.move_end();
-      display.move_line_end();
+      // display.move_line_end();
       display.put_char('\n');
       display.flush();
       return;

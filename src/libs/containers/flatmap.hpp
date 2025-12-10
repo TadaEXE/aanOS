@@ -3,8 +3,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <kernel/log.hpp>
-
 namespace ctr {
 
 template <typename Key, typename Val, size_t Capacity>
@@ -90,7 +88,6 @@ class FlatMap {
     size_t i = (h + 1) % Capacity;
     Entry* e = &data[i];
     while (i != h) {
-      log_msg("     %x: t:%d k:%d v:%c h:%x", i, e->taken, e->key, e->value, h);
       if ((e->taken && e->key == key) || !e->taken) {
         if (io) *io = i;
         return e;

@@ -1,5 +1,7 @@
 #include "ui/core/text_area.hpp"
 
+#include <kernel/log.hpp>
+
 namespace ui {
 
 void TextArea::put_char(char c) noexcept {
@@ -42,7 +44,7 @@ void TextArea::move_cursor(gfx::Point np) noexcept {
 }
 
 void TextArea::redraw() noexcept {
-  canvas.clear(style.bg, area);
+  tr.clear();  // this is really bad TODO: Don't do!
   gfx::Point draw_pos{0, 0};
 
   const auto cap = visible_line_capacity();
