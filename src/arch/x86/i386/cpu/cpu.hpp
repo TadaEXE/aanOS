@@ -4,7 +4,7 @@
 
 #include "hal/cpu.hpp"
 
-namespace x86::cpu {
+namespace i386::cpu {
 
 struct Regs32 {
   uint32_t edi;

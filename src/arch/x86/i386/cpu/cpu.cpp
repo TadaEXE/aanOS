@@ -1,6 +1,6 @@
 #include "x86/i386/cpu/cpu.hpp"
 
-namespace x86::cpu {
+namespace i386::cpu {
 
 bool Cpu32::create_context(hal::CpuContext& context, hal::EntryFn entry, void* arg,
                            uintptr_t stack_top) const noexcept {

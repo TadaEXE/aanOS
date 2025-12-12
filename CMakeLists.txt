@@ -81,6 +81,7 @@ set(KERNEL_SOURCES
     "${CMAKE_SOURCE_DIR}/src/kernel/boot/multiboot2.cpp"
 
     "${CMAKE_SOURCE_DIR}/src/kernel/memory/builtin/bm_heap.cpp"
+    "${CMAKE_SOURCE_DIR}/src/kernel/memory/builtin/bm_page_frame_allocator.cpp"
     "${CMAKE_SOURCE_DIR}/src/kernel/memory/global_hooks.cpp"
     "${CMAKE_SOURCE_DIR}/src/kernel/memory/heap.cpp"
 

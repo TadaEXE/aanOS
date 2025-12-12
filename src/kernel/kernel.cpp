@@ -67,12 +67,21 @@ logging::backend::LoggingSink* setup_logging(KernelServices& serv) {
     log_msg("Kernel heap (%d MiB) initialized at %p", 32, ctx.ram_start_addr);
   }
 
+  uintptr_t out;
+  hal::PageFlags fl;
+  if (!services.paging->translate(0xFD000000u, out, fl)) { log_msg("FB not mapped!"); }
+
+  uint8_t* alloc_test = new uint8_t{3};
+  log_msg("Can allocate test value %u at addr %p", *alloc_test, alloc_test);
+
   hal::Framebuffer* fb = services.framebuffer;
   if (!fb) { panic("No framebuffer provided by bootloader. Abort!"); }
-  log_msg("Got frame buffer %o", fb);
+  log_msg("Got framebuffer(%p) %o", fb->begin(), fb);
 
   gfx::Canvas can(*fb);
   can.clear(0xFF202040);
+
+  log_msg("Can write to framebuffer");
 
   auto* kb = services.keyboard;
   if (!kb) { panic("No keyboard provided by bootloader. Abort!"); }

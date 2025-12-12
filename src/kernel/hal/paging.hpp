@@ -5,9 +5,6 @@
 
 namespace hal {
 
-using PhysAddr = uint32_t;
-using VirtAddr = uint32_t;
-
 enum class PageFlags : uint32_t {
   None = 0,
   Present = 1u << 0,
@@ -41,14 +38,14 @@ class Paging {
   virtual ~Paging() = default;
 
   virtual size_t page_size() const noexcept = 0;
-  virtual bool map(VirtAddr vaddr, PhysAddr paddr, PageFlags flags) noexcept = 0;
-  virtual bool map_range(VirtAddr vaddr, PhysAddr paddr, size_t pages,
+  virtual bool map(uintptr_t vaddr, uintptr_t paddr, PageFlags flags) noexcept = 0;
+  virtual bool map_range(uintptr_t vaddr, uintptr_t paddr, size_t pages,
                          PageFlags flags) noexcept = 0;
-  virtual void unmap(VirtAddr vadddr) noexcept = 0;
-  virtual void unmap_range(VirtAddr vaddr, size_t pages) noexcept = 0;
-  virtual bool translate(VirtAddr vaddr, PhysAddr& out_paddr,
+  virtual void unmap(uintptr_t vadddr) noexcept = 0;
+  virtual void unmap_range(uintptr_t vaddr, size_t pages) noexcept = 0;
+  virtual bool translate(uintptr_t vaddr, uintptr_t& out_paddr,
                          PageFlags& out_flags) const noexcept = 0;
-  virtual void flush(VirtAddr vaddr) noexcept = 0;
+  virtual void flush(uintptr_t vaddr) noexcept = 0;
   virtual void flush_all() noexcept = 0;
 };
 
