@@ -30,6 +30,7 @@ long ftell(FILE*);
 size_t fwrite(const void*, size_t, size_t, FILE*);
 void setbuf(FILE*, char*);
 int vfprintf(FILE*, const char*, va_list);
+int vsnprintf(char *buf, size_t size, const char *fmt, va_list ap);
 
 #ifdef __cplusplus
 }
