@@ -98,7 +98,6 @@ void Tty::readline(ctr::String& out, std::string_view prompt) noexcept {
       continue;
     } else if (c == '\n' || c == '\r') {
       display.move_end();
-      // display.move_line_end();
       display.put_char('\n');
       display.flush();
       return;

@@ -26,5 +26,6 @@ class Display {
   virtual void move_end() noexcept = 0;
 
   virtual gfx::Point cursor() noexcept = 0;
+  virtual size_t get_line_length() const noexcept = 0;
 };
 }  // namespace tty

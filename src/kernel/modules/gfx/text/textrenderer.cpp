@@ -14,7 +14,8 @@ void TextRenderer::draw_glyph(char c, bool inverted) {
   const uint8_t* glyph = font.data + index * font.glyph_height;
 
   for (uint32_t gy = 0; gy < font.glyph_height; ++gy) {
-    uint8_t row = glyph[gy] ^ inverted;
+    uint8_t row = glyph[gy];
+    row = inverted ? ~row : row;
 
     uint32_t py = (last_y + gy) * style.scale;
 

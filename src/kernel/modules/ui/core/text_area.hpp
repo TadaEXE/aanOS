@@ -39,6 +39,8 @@ class TextArea {
 
   size_t line_count() const noexcept { return lines; }
 
+  size_t get_glyphs_per_line() const noexcept;
+
  private:
   size_t visible_line_capacity() const noexcept;
   size_t count_lines() noexcept;
@@ -46,7 +48,6 @@ class TextArea {
   size_t line_end_index(size_t start_idx) const noexcept;
   size_t line_height() const noexcept;
   size_t eff_glyph_width() const noexcept;
-  size_t max_line_length() const noexcept;
 
   gfx::Rect area;
   // gfx::Canvas& canvas;

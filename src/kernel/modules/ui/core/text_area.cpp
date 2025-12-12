@@ -231,7 +231,7 @@ size_t TextArea::eff_glyph_width() const noexcept {
   return (tr.font.glyph_width + style.gap_x) * style.scale;
 }
 
-size_t TextArea::max_line_length() const noexcept {
+size_t TextArea::get_glyphs_per_line() const noexcept {
   return area.w / eff_glyph_width();
 }
 

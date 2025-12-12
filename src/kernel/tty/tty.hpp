@@ -30,6 +30,8 @@ class Tty {
 
   void readline(ctr::String& out, std::string_view prompt) noexcept;
 
+  size_t get_line_length() {return display.get_line_length(); }
+
  private:
   Display& display;
   hal::Keyboard& keyboard;

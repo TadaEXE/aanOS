@@ -32,6 +32,7 @@ class TtyTextArea : public tty::Display {
   void move_end() noexcept override;
 
   gfx::Point cursor() noexcept override { return area.cursor_pos(); }
+  size_t get_line_length() const noexcept override { return area.get_glyphs_per_line(); }
 
  private:
   TextArea& area;
