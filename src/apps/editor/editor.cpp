@@ -47,7 +47,7 @@ void Editor::run() noexcept {
 
   bool shift_down = false;
 
-  constexpr const char* banner = "#editOS#\n";
+  constexpr const char* banner = "#aanOS#\n";
 
   for (const char* p = banner; *p != '\0'; ++p) {
     console.write_char(*p);

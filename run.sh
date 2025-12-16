@@ -1,4 +1,4 @@
 !#/usr/bin/bash
 
-qemu-system-i386 -cdrom ./build/editOS.iso
+qemu-system-i386 -cdrom ./build/aanOS.iso
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(editOS LANGUAGES CXX ASM)
+project(aanOS LANGUAGES CXX ASM)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,7 +50,7 @@ target_include_directories(module_compile_config INTERFACE
 foreach(cfg IN ITEMS kernel_compile_config module_compile_config)
     target_compile_options(${cfg} INTERFACE
         $<$<COMPILE_LANGUAGE:CXX>:
-            -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/src/=/editOS/
+            -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/src/=/aanOS/
             -ffreestanding
             -fno-exceptions
             -fno-rtti
@@ -139,7 +139,7 @@ flush_pending_kernel_modules()
 # ----------------------------------------------------------------------
 # ISO creation
 # ----------------------------------------------------------------------
-set(ISO_FILE ${CMAKE_BINARY_DIR}/editOS.iso)
+set(ISO_FILE ${CMAKE_BINARY_DIR}/aanOS.iso)
 
 add_custom_command(
     OUTPUT ${ISO_FILE}
@@ -147,7 +147,7 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E make_directory iso/boot/grub
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel> iso/boot/kernel.elf
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/grub.cfg iso/boot/grub/grub.cfg
-    COMMAND grub-mkrescue -o editOS.iso iso
+    COMMAND grub-mkrescue -o aanOS.iso iso
     DEPENDS kernel ${CMAKE_SOURCE_DIR}/grub.cfg
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     VERBATIM

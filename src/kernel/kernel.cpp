@@ -49,7 +49,7 @@ logging::backend::LoggingSink* setup_logging(KernelServices& serv) {
             e.value->size);
   }
 
-  log_msg("editOS kernel entered...");
+  log_msg("aanOS kernel entered...");
   log_msg("Booted by %s", ctx.bootloader_name);
   log_msg("Bootoptions: %s", ctx.cmdline);
   log_msg("%d KiB available in upper memory", ctx.upper_mem_kb);
